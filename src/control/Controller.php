@@ -2,13 +2,17 @@
 include_once 'model/Car.php';
 include_once 'model/CarStorage.php';
 include_once 'model/CarBuilder.php';
+include_once 'model/AccountStorageStub.php';
+include_once 'model/AccountStorage.php';
 class Controller{
     protected $view;
     protected $carStorage;
+    protected $accountStorage;
 
     public function __construct($view,$carStorage){
         $this->view = $view;
         $this->carStorage = $carStorage;
+        $this->accountStorage = new AccountStorageStub();
     }
 
     public function showInformation($id){
@@ -106,5 +110,19 @@ class Controller{
         $carBuilder = new CarBuilder(null);
         $this->view->makeCarCreationPage($carBuilder);
       }
+    }
+
+    public function login($data){
+        if($this->accountStorage->checkAuth($data['login'],$data['password'])){
+            $this->view->makeWelcomPage();
+        }
+        else{
+            $this->view->makeLoginErrorPage();
+        }
+    }
+
+    public function disconnection(){
+        $this->accountStorage->disconnect();
+        $this->view->makeWelcomPage();
     }
 }

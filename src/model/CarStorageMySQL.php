@@ -2,6 +2,7 @@
 class CarStorageMySQL implements CarStorage{
 
   protected $bd;
+
   public function __construct($bd){
     $this->bd = $bd;
   }

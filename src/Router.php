@@ -8,9 +8,15 @@ class Router
         $feedback = key_exists("feedback", $_SESSION) ? $_SESSION['feedback'] : "";
         $affiche = new View($this,$feedback);
         $_SESSION['feedback'] = "";
+        $isConnected = !empty($_SESSION['user']);
         $controller = new Controller($affiche,$carStorage);
         if(array_key_exists("id",$_GET)){
-            $controller->showInformation($_GET["id"]);
+            if($isConnected){
+                $controller->showInformation($_GET["id"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
         }
         elseif(array_key_exists("upload",$_GET)){
           $controller->uploadPage($_POST);
@@ -22,27 +28,64 @@ class Router
           $controller->showDebugPage();
         }
         elseif(array_key_exists("action",$_GET)){
-          if($_GET["action"] == "nouveau"){
-            $controller->newCar();
-          }
-          elseif($_GET["action"] == "sauverNouveau"){
-            $controller->saveNewCar($_POST);
+          if($isConnected){
+              if($_GET["action"] == "nouveau"){
+                  $controller->newCar();
+              }
+              elseif($_GET["action"] == "sauverNouveau"){
+                  $controller->saveNewCar($_POST);
+              }
+              else{
+                  $affiche->makeUnknownCarPage();
+              }
           }
           else{
-              $affiche->makeUnknownCarPage();
+            $affiche->makeUnauthorizedPage();
           }
         }
         elseif(array_key_exists("demandeSupression",$_GET)){
-            $affiche->makeAskSupressionPage($_GET["demandeSupression"]);
+            if($isConnected){
+                $affiche->makeAskSupressionPage($_GET["demandeSupression"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
         }
         elseif(array_key_exists("supression",$_GET)){
-            $controller->deleteCar($_GET["supression"]);
+            if($isConnected){
+                $controller->deleteCar($_GET["supression"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
         }
         elseif(array_key_exists("demandeModification",$_GET)){
-            $controller->optionModification($_GET["demandeModification"]);
+            if($isConnected){
+                $controller->optionModification($_GET["demandeModification"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
         }
         elseif(array_key_exists("modification",$_GET)){
-            $controller->modification($_GET["modification"],$_POST);
+            if($isConnected){
+                $controller->modification($_GET["modification"],$_POST);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("propo",$_GET)){
+            $affiche->makeAproposPage();
+        }
+        elseif (array_key_exists("login",$_GET)){
+            $affiche->makeLoginFormPage();
+        }
+        elseif (array_key_exists("loginSend",$_GET)){
+            $controller->login($_POST);
+        }
+        elseif(array_key_exists("disconnect",$_GET)){
+            $controller->disconnection();
         }
         else{
             $controller->showWelcomPage();
@@ -81,5 +124,16 @@ class Router
     public function getList(){
       return "?liste";
     }
-
+    public function getAPropos(){
+        return "?propo";
+    }
+    public function getLogin(){
+        return "?login";
+    }
+    public function getLoginSend(){
+        return "?loginSend";
+    }
+    public function getDisconnectUser(){
+        return "?disconnect";
+    }
 }

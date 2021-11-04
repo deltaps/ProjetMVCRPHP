@@ -9,10 +9,9 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creation' => $this->router->getCarCreationURL());
+        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser());
         $this->feedback = $feedback;
     }
-
 
     public function render(){
         echo("
@@ -25,8 +24,20 @@ class View{
             <body>
                 <nav>
                 <ul>");
-
           foreach ($this->menu as $key => $value) {
+              if(empty($_SESSION['user'])){
+                  if($key === 'creationObjet'){
+                      continue;
+                  }
+                  if($key === "deconnexion"){
+                      continue;
+                  }
+              }
+              else{
+                  if($key === 'connexion'){
+                      continue;
+                  }
+              }
             echo("<li>");
             echo("<a href=" . $value . ">". $key . "</a>");
             echo("</li>");
@@ -46,6 +57,7 @@ class View{
             </body>
         </html>
         ");
+          var_dump($_SESSION);
     }
 
     public function makeTestPage(){
@@ -248,6 +260,37 @@ class View{
             </form>";
             $this->render();
         }
+    }
+    public function makeAproposPage(){
+        $this->title = "A propos";
+        $this->content = "<p> PRONOST Sacha, Numéro étudiant :<strong> 21901956 </strong> Groupe : <strong>4B</strong> </p>
+        <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p>
+        ";
+        $this->render();
+    }
+    public function makeLoginFormPage(){
+        $this->title = "Connexion";
+        $this->content = "<form method='POST' action=". $this->router->getLoginSend().">
+        <label>Nom : <input type='text' name='login' /></label>
+        <label>Mot de passe : <input type='password' name='password' /></label>
+        <button>Se connecter</button>
+        </form>";
+        $this->render();
+    }
+    public function makeLoginErrorPage(){
+        $this->title = "Connexion";
+        $this->content = "<p>Erreur, votre login ou passsword est incorect</p>
+        <form method='POST' action=". $this->router->getLoginSend().">
+        <label>Nom : <input type='text' name='login' /></label>
+        <label>Mot de passe : <input type='password' name='password' /></label>
+        <button>Se connecter</button>
+        </form>";
+        $this->render();
+    }
+    public function makeUnauthorizedPage(){
+        $this->title = "Accées non autorisé";
+        $this->content = "<p>Vous ne pouvez pas accéder a cette page avec votre status actuelle</p>";
+        $this->render();
     }
     public function displayCarCreationSuccess($id){
       $url = $this->router->getCarURL($id);
