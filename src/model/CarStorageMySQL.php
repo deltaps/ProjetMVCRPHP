@@ -12,16 +12,21 @@ class CarStorageMySQL implements CarStorage{
     $response = $this->bd->query($requete);
     if($response != null){
       $allResponse = $response->fetchALL();
-      $car = new Car($allResponse[0]["name"],$allResponse[0]["brand"],$allResponse[0]["horsePower"],$allResponse[0]["torque"],$allResponse[0]["year"]);
-      return $car;
+      if($allResponse != null){
+        $car = new Car($allResponse[0]["name"],$allResponse[0]["brand"],$allResponse[0]["horsePower"],$allResponse[0]["torque"],$allResponse[0]["year"]);
+        return $car;
+      }
+      else{
+        return null;
+      }
     }
   }
 
   public function isOwner($id){
     $requete = "SELECT name,brand,horsePower,torque,year,owner FROM voitures WHERE id = ". $id . ";";
     $response = $this->bd->query($requete);
-    if($response != null){
-      $allResponse = $response->fetchALL();
+    $allResponse = $response->fetchALL();
+    if($allResponse != null){
       return $allResponse[0]["owner"];
     }
   }

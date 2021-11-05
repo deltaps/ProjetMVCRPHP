@@ -9,10 +9,10 @@ class Controller{
     protected $carStorage;
     protected $accountStorage;
 
-    public function __construct($view,$carStorage){
+    public function __construct($view,$carStorage,$accountStorage){
         $this->view = $view;
         $this->carStorage = $carStorage;
-        $this->accountStorage = new AccountStorageStub();
+        $this->accountStorage = $accountStorage;
     }
 
     public function showInformation($id){
@@ -35,23 +35,28 @@ class Controller{
       $this->view->makeDebugPage($test);
     }
     public function saveNewCar($data){
-      $carBuilder = new CarBuilder($data);
-      if($carBuilder->isValid()){
-        $car = $carBuilder->createCar();
-        $this->carStorage->create($car);
-        $compt = 0;
-        $myKey = 0;
-        foreach ($this->carStorage->readAll() as $key => $value) {
-          if($compt == count($this->carStorage->readAll())-1){
-            $myKey = $key;
+      if($data != null){
+          $carBuilder = new CarBuilder($data);
+          if($carBuilder->isValid()){
+              $car = $carBuilder->createCar();
+              $this->carStorage->create($car);
+              $compt = 0;
+              $myKey = 0;
+              foreach ($this->carStorage->readAll() as $key => $value) {
+                  if($compt == count($this->carStorage->readAll())-1){
+                      $myKey = $key;
+                  }
+                  $compt++;
+              }
+              $this->view->displayCarCreationSuccess($myKey);
           }
-          $compt++;
-        }
-        $this->view->displayCarCreationSuccess($myKey);
+          else{
+              $_SESSION['currentNewCar'] = $carBuilder;
+              $this->view->makeCarCreationPage($carBuilder);
+          }
       }
       else{
-        $_SESSION['currentNewCar'] = $carBuilder;
-        $this->view->makeCarCreationPage($carBuilder);
+          $this->view->makeWelcomPage();
       }
     }
     public function isOwner($id){
@@ -136,11 +141,16 @@ class Controller{
     }
 
     public function login($data){
-        if($this->accountStorage->checkAuth($data['login'],$data['password'])){
-            $this->view->makeWelcomPage();
+        if($data != null){
+            if($this->accountStorage->checkAuth($data['login'],$data['password'])){
+                $this->view->makeWelcomPage();
+            }
+            else{
+                $this->view->makeLoginErrorPage("Erreur, votre login ou passsword est incorect");
+            }
         }
         else{
-            $this->view->makeLoginErrorPage();
+            $this->view->makeWelcomPage();
         }
     }
 
@@ -149,4 +159,27 @@ class Controller{
         $this->view->makeWelcomPage();
     }
 
+    public function creationAccount($data){
+        if($data != null){
+            $loginAlreadyTaken = false;
+            foreach ($this->accountStorage->getTableauCompte() as $compte) {
+                if($compte->getLogin() === $data['login']){
+                    $this->view->makeCreationAccountPage("le login appartient déjà a quelqu'un");
+                    $loginAlreadyTaken = true;
+                }
+            }
+            if(!$loginAlreadyTaken){
+                if($data['login'] != "" && $data['password'] != ""){
+                    $this->accountStorage->creationAccount($data);
+                    $this->view->makeLoginErrorPage("Votre compte a été crée avec succées, veuillé vous connecter");
+                }
+                else{
+                    $this->view->makeCreationAccountPage("il faut que les deux champs sois remplie");
+                }
+            }
+        }
+        else{
+            $this->view->makeWelcomPage();
+        }
+    }
 }

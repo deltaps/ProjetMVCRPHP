@@ -3,13 +3,13 @@ include_once 'view/View.php';
 include_once 'control/Controller.php';
 class Router
 {
-    public function main($carStorage){
+    public function main($carStorage,$accountStorage){
         session_start();
         $feedback = key_exists("feedback", $_SESSION) ? $_SESSION['feedback'] : "";
         $affiche = new View($this,$feedback);
         $_SESSION['feedback'] = "";
         $isConnected = !empty($_SESSION['user']);
-        $controller = new Controller($affiche,$carStorage);
+        $controller = new Controller($affiche,$carStorage,$accountStorage);
         if(array_key_exists("id",$_GET)){
             if($isConnected){
                 $controller->showInformation($_GET["id"]);
@@ -87,6 +87,12 @@ class Router
         elseif(array_key_exists("disconnect",$_GET)){
             $controller->disconnection();
         }
+        elseif(array_key_exists("creationAccount",$_GET)){
+            $affiche->makeCreationAccountPage("");
+        }
+        elseif(array_key_exists("accountSend",$_GET)){
+            $controller->creationAccount($_POST);
+        }
         else{
             $controller->showWelcomPage();
         }
@@ -135,5 +141,11 @@ class Router
     }
     public function getDisconnectUser(){
         return "?disconnect";
+    }
+    public function getCreationAccount(){
+        return "?creationAccount";
+    }
+    public function getAccountSend(){
+        return "?accountSend";
     }
 }

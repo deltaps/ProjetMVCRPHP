@@ -9,7 +9,7 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser());
+        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount());
         $this->feedback = $feedback;
     }
 
@@ -35,6 +35,9 @@ class View{
               }
               else{
                   if($key === 'connexion'){
+                      continue;
+                  }
+                  if($key === "creationCompte"){
                       continue;
                   }
               }
@@ -276,9 +279,9 @@ class View{
         </form>";
         $this->render();
     }
-    public function makeLoginErrorPage(){
+    public function makeLoginErrorPage($error){
         $this->title = "Connexion";
-        $this->content = "<p>Erreur, votre login ou passsword est incorect</p>
+        $this->content = "<p>" . $error ."</p>
         <form method='POST' action=". $this->router->getLoginSend().">
         <label>Nom : <input type='text' name='login' /></label>
         <label>Mot de passe : <input type='password' name='password' /></label>
@@ -291,6 +294,42 @@ class View{
         $this->content = "<p>Vous ne pouvez pas accéder a cette page avec votre status actuelle</p>";
         $this->render();
     }
+    public function makeCreationAccountPage($error){
+        $this->title = "Création de compte";
+        if($error === ""){
+            $this->content = "<form method='POST' action=". $this->router->getAccountSend().">
+            <div>
+                <label for='login'>login :</label>
+                <input type='text' id='login' name='login'>
+            </div>
+            <div>
+                <label for='password'>Mot de passe :</label>
+                <input type='password' id='password' name='password'>
+            </div>
+            <div>
+              <button type='submit'>Envoyer </button>
+            </div>
+            </form>";
+        }
+        else{
+            $this->content = "<p>Erreur : ". $error ."</p>
+            <form method='POST' action=". $this->router->getAccountSend().">
+            <div>
+                <label for='login'>login :</label>
+                <input type='text' id='login' name='login'>
+            </div>
+            <div>
+                <label for='password'>Mot de passe :</label>
+                <input type='text' id='password' name='password'>
+            </div>
+            <div>
+              <button type='submit'>Envoyer </button>
+            </div>
+            </form>";
+        }
+
+        $this->render();
+    }
     public function displayCarCreationSuccess($id){
       $url = $this->router->getCarURL($id);
       $this->router->POSTredirect($url,"rien pour le moment");
@@ -300,4 +339,5 @@ class View{
       header('Location:' . $url);
       //TODO exercice 5 du tp 16
     }
+
 }
