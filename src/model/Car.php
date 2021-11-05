@@ -6,6 +6,7 @@ class Car{
     protected $horsePower;
     protected $torque;
     protected $year;
+    protected $owner;
 
     public function __construct($name, $brand, $horsePower, $torque, $year)
     {
@@ -14,6 +15,7 @@ class Car{
         $this->horsePower = $horsePower;
         $this->torque = $torque;
         $this->year = $year;
+        $this->owner = null;
     }
 
     public function getName()
@@ -40,6 +42,5 @@ class Car{
     {
         return $this->year;
     }
-
 
 }

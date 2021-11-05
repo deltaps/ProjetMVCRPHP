@@ -57,7 +57,6 @@ class View{
             </body>
         </html>
         ");
-          var_dump($_SESSION);
     }
 
     public function makeTestPage(){

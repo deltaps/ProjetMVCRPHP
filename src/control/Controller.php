@@ -54,51 +54,74 @@ class Controller{
         $this->view->makeCarCreationPage($carBuilder);
       }
     }
+    public function isOwner($id){
+        return $this->carStorage->isOwner($id) == $_SESSION['user']->getNom();
+    }
 
     public function askCarDeletion($id){
         if($this->carStorage->read($id) != null){
-            $this->view->makeCarDeletionPage($id);
+            if($this->isOwner($id)){
+                $this->view->makeAskSupressionPage($id);
+            }
+            else{
+                $this->view->makeUnauthorizedPage();
+            }
         }
         else{
             $this->view->makeErrorPage("La voiture n'existe pas");
         }
     }
     public function deleteCar($id){
-        $this->carStorage->delete($id);
-        $this->showList();
+        if($this->isOwner($id)){
+            $this->carStorage->delete($id);
+            $this->showList();
+        }
+        else{
+            $this->view->makeUnauthorizedPage();
+        }
     }
     public function optionModification($id){
         if($this->carStorage->read($id) != null){
-            $liste = array("name" => $this->carStorage->read($id)->getName() ,
-                "brand" => $this->carStorage->read($id)->getBrand() ,
-                "horsePower" => $this->carStorage->read($id)->getHorsePower() ,
-                "torque" => $this->carStorage->read($id)->getTorque() ,
-                "year" => $this->carStorage->read($id)->getYear());
-            $carBuilder = new CarBuilder($liste);
-            $this->view->makeCarModificationPage($id,$carBuilder,false);
+            if($this->isOwner($id)){
+                $liste = array("name" => $this->carStorage->read($id)->getName() ,
+                    "brand" => $this->carStorage->read($id)->getBrand() ,
+                    "horsePower" => $this->carStorage->read($id)->getHorsePower() ,
+                    "torque" => $this->carStorage->read($id)->getTorque() ,
+                    "year" => $this->carStorage->read($id)->getYear());
+                $carBuilder = new CarBuilder($liste);
+                $this->view->makeCarModificationPage($id,$carBuilder,false);
+            }
+            else{
+                $this->view->makeUnauthorizedPage();
+            }
         }
         else{
             $this->view->makeErrorPage("La voiture n'existe pas");
         }
     }
     public function modification($id,$data){
-        $carBuilder = new CarBuilder($data);
-        if($carBuilder->isValid()){
-            $car = $carBuilder->createCar();
-            $this->carStorage->modify($id,$car);
-            $this->view->makeCarPage($car,$id);
+        if($this->isOwner($id)){
+            $carBuilder = new CarBuilder($data);
+            if($carBuilder->isValid()){
+                $car = $carBuilder->createCar();
+                $this->carStorage->modify($id,$car);
+                $this->view->makeCarPage($car,$id);
+            }
+            else{
+                $this->view->makeCarModificationPage($id,$carBuilder,true);
+            }
         }
         else{
-            $this->view->makeCarModificationPage($id,$carBuilder,true);
+            $this->view->makeUnauthorizedPage();
         }
     }
 
     public function uploadPage($data){
-      if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/uploadedFile.png")) {
-        echo "Copie de fichier réussie";
+      if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/uploadedFile.png")){
+        $this->view->makeWelcomPage();
       }
       else {
-        echo "Problème de copie de fichier";
+        $this->view->makeErrorPage("L'upload n'a pas fonctionnée");
       }
     }
 
@@ -125,4 +148,5 @@ class Controller{
         $this->accountStorage->disconnect();
         $this->view->makeWelcomPage();
     }
+
 }

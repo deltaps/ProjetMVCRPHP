@@ -8,8 +8,9 @@ class AccountStorageStub implements AccountStorage{
     private $authManager;
 
     public function __construct(){
-        $mdpVanier = password_hash("toto", PASSWORD_BCRYPT);
-        $this->tableauCompte = array(1 => new Account("vanier","vanier",$mdpVanier,"admin"));
+        //$mdpVanier = password_hash("toto", PASSWORD_BCRYPT);
+        $this->tableauCompte = array(1 => new Account("vanier","vanier",'$2y$10$GKeIBRG94GC6QpyxMKikeeGa/rNoepk2bzWAyM9knOmbvNWO36.tO',"admin"),
+            2 => new Account("lecarpentier","lecarpentier",'$2y$10$GKeIBRG94GC6QpyxMKikeeGa/rNoepk2bzWAyM9knOmbvNWO36.tO',"admin"));
         $this->authManager = new AuthentificationManager($this->tableauCompte);
     }
 

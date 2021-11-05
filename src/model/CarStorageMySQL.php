@@ -17,6 +17,15 @@ class CarStorageMySQL implements CarStorage{
     }
   }
 
+  public function isOwner($id){
+    $requete = "SELECT name,brand,horsePower,torque,year,owner FROM voitures WHERE id = ". $id . ";";
+    $response = $this->bd->query($requete);
+    if($response != null){
+      $allResponse = $response->fetchALL();
+      return $allResponse[0]["owner"];
+    }
+  }
+
   public function readAll(){
     $requete = "SELECT id,name,brand,horsePower,torque,year FROM voitures";
     $response = $this->bd->query($requete);
@@ -39,9 +48,9 @@ class CarStorageMySQL implements CarStorage{
     }
     $idPossble = $idMax++;
     $idPossble+= 2;
-    $requete = "INSERT INTO voitures VALUES (:id,:name,:brand,:horsePower,:torque,:year,:image)";
+    $requete = "INSERT INTO voitures VALUES (:id,:name,:brand,:horsePower,:torque,:year,:owner)";
     $stmt = $this->bd->prepare($requete);
-    $data = array(':id' => $idPossble, ':name' => $a->getName(), ':brand' => $a->getBrand(), ':horsePower' => $a->getHorsePower(), ':torque' => $a->getTorque(), ':year' => $a->getYear(), ':image' => "");
+    $data = array(':id' => $idPossble, ':name' => $a->getName(), ':brand' => $a->getBrand(), ':horsePower' => $a->getHorsePower(), ':torque' => $a->getTorque(), ':year' => $a->getYear(), ':owner' => $_SESSION['user']->getNom());
     $stmt->execute($data);
   }
 

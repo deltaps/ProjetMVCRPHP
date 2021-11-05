@@ -34,6 +34,4 @@ class Account{
         return $this->status;
     }
 
-
-
 }

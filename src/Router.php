@@ -45,7 +45,7 @@ class Router
         }
         elseif(array_key_exists("demandeSupression",$_GET)){
             if($isConnected){
-                $affiche->makeAskSupressionPage($_GET["demandeSupression"]);
+                $controller->askCarDeletion($_GET["demandeSupression"]);
             }
             else{
                 $affiche->makeUnauthorizedPage();
