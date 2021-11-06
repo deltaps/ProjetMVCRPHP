@@ -38,6 +38,7 @@ class Controller{
       if($data != null){
           $carBuilder = new CarBuilder($data);
           if($carBuilder->isValid()){
+              unset($_SESSION['currentNewCar']);
               $car = $carBuilder->createCar();
               $this->carStorage->create($car);
               $compt = 0;
@@ -48,7 +49,8 @@ class Controller{
                   }
                   $compt++;
               }
-              $this->view->displayCarCreationSuccess($myKey);
+              $this->view->makeCarImageAdd($myKey);
+              //$this->view->displayCarCreationSuccess($myKey);
           }
           else{
               $_SESSION['currentNewCar'] = $carBuilder;
@@ -79,6 +81,9 @@ class Controller{
     public function deleteCar($id){
         if($this->isOwner($id)){
             $this->carStorage->delete($id);
+            if(file_exists("./img/" . $id . ".png")){
+                unlink("./img/" . $id . ".png");
+            }
             $this->showList();
         }
         else{
@@ -110,7 +115,8 @@ class Controller{
             if($carBuilder->isValid()){
                 $car = $carBuilder->createCar();
                 $this->carStorage->modify($id,$car);
-                $this->view->makeCarPage($car,$id);
+                $this->view->makeCarImageAdd($id);
+                //$this->view->displayCarCreationSuccess($id);
             }
             else{
                 $this->view->makeCarModificationPage($id,$carBuilder,true);
@@ -121,12 +127,15 @@ class Controller{
         }
     }
 
-    public function uploadPage($data){
-      if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/uploadedFile.png")){
-        $this->view->makeWelcomPage();
+    public function uploadPage($id){
+      if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/". $id .".png")){
+          $this->view->displayCarCreationSuccess($id);
       }
       else {
-        $this->view->makeErrorPage("L'upload n'a pas fonctionnée");
+          if(file_exists("./img/" . $id . ".png")){
+              unlink("./img/" . $id . ".png");
+          }
+          $this->view->displayCarCreationSuccess($id);
       }
     }
 

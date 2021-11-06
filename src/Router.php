@@ -19,7 +19,7 @@ class Router
             }
         }
         elseif(array_key_exists("upload",$_GET)){
-          $controller->uploadPage($_POST);
+          $controller->uploadPage($_GET["upload"]);
         }
         elseif(array_key_exists("liste",$_GET)){
             $controller->showList();
@@ -93,6 +93,30 @@ class Router
         elseif(array_key_exists("accountSend",$_GET)){
             $controller->creationAccount($_POST);
         }
+        elseif(array_key_exists("menuModificationAccount",$_GET)){
+            if($isConnected){
+                if($_SESSION['user']->getStatus() === "admin"){
+                    $affiche->makeListModificationAccountPage($accountStorage);
+                }
+                else{
+                    $affiche->makeUnauthorizedPage();
+                }
+            }else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("modificationAccount",$_GET)){
+            if($isConnected){
+                if($_SESSION['user']->getStatus() === "admin"){
+                    $affiche->makeModificationAccountPage($accountStorage,$_GET["modificationAccount"]);
+                }
+                else{
+                    $affiche->makeUnauthorizedPage();
+                }
+            }else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
         else{
             $controller->showWelcomPage();
         }
@@ -124,8 +148,8 @@ class Router
     public function getCarModificationURL($id){
         return "?modification=" . $id;
     }
-    public function getUploadUrl(){
-      return "?upload";
+    public function getUploadUrl($id){
+      return "?upload=" . $id;
     }
     public function getList(){
       return "?liste";
@@ -147,5 +171,11 @@ class Router
     }
     public function getAccountSend(){
         return "?accountSend";
+    }
+    public function getMenuModificationAccount(){
+        return "?menuModificationAccount";
+    }
+    public function getModificationAccount($id){
+        return "?modificationAccount=" . $id;
     }
 }

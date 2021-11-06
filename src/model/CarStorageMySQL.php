@@ -68,9 +68,9 @@ class CarStorageMySQL implements CarStorage{
 
   public function modify($id,$a){
     $this->delete($id);
-    $requete = "INSERT INTO voitures VALUES (:id,:name,:brand,:horsePower,:torque,:year)";
+    $requete = "INSERT INTO voitures VALUES (:id,:name,:brand,:horsePower,:torque,:year,:owner)";
     $stmt = $this->bd->prepare($requete);
-    $data = array(':id' => $id, ':name' => $a->getName(), ':brand' => $a->getBrand(), ':horsePower' => $a->getHorsePower(), ':torque' => $a->getTorque(), ':year' => $a->getYear());
+    $data = array(':id' => $id, ':name' => $a->getName(), ':brand' => $a->getBrand(), ':horsePower' => $a->getHorsePower(), ':torque' => $a->getTorque(), ':year' => $a->getYear(), ':owner' => $_SESSION['user']->getNom());
     $stmt->execute($data);
   }
 }

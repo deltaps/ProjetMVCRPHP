@@ -9,7 +9,7 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount());
+        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount(), 'modificationComptes' => $this->router->getMenuModificationAccount());
         $this->feedback = $feedback;
     }
 
@@ -32,6 +32,9 @@ class View{
                   if($key === "deconnexion"){
                       continue;
                   }
+                  if($key === "modificationComptes"){
+                      continue;
+                  }
               }
               else{
                   if($key === 'connexion'){
@@ -39,6 +42,11 @@ class View{
                   }
                   if($key === "creationCompte"){
                       continue;
+                  }
+                  if($key === "modificationComptes"){
+                      if($_SESSION['user']->getStatus() != "admin"){
+                          continue;
+                      }
                   }
               }
             echo("<li>");
@@ -50,13 +58,6 @@ class View{
                 </nav>
                 <h1>". $this->title ."</h1>
                 " . $this->content . "
-                <style type='text/css'>
-                  img{
-                    width:10em;
-                    margin-left:90%;
-                  }
-                </style>
-                <img src='./img/uploadedFile.png'>
             </body>
         </html>
         ");
@@ -70,8 +71,11 @@ class View{
 
     public function makeCarPage($car,$id){
         $this->title = "Page sur " . $car->getName();
-        $this->content = $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
-        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear();
+        $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
+        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
+        if(file_exists("./img/" . $id . ".png")){
+            $this->content .= "<div><img src='./img/" . $id . ".png'></div>";
+        }
         $this->content .= "<form method='POST' action=". $this->router->getCarAskDeletionURL($id) .">
                             <button type='submit'>Supprimer cette voiture </button>
                             </form>";
@@ -90,14 +94,6 @@ class View{
     public function makeWelcomPage(){
         $this->title = "Bienvenue sur le site";
         $this->content = "Vous pouvez rechercher une voiture";
-        $this->content = $this->content . "<form enctype='multipart/form-data' action=" . $this->router->getUploadUrl() . "
-                                    method='POST'>
-
-      <input type='file' name='pj'>
-
-      <button type='submit'>Valider</button>
-
-      </form>";
         $this->render();
     }
 
@@ -187,6 +183,14 @@ class View{
             </form>";
           $this->render();
       }
+    }
+    public function makeCarImageAdd($id){
+        $this->title = "Ajout d'une image";
+        $this->content = "<form enctype='multipart/form-data' action=" . $this->router->getUploadUrl($id) . " method='POST'>
+        <input type='file' name='pj'>
+        <button type='submit'>Valider</button>
+        </form>";
+        $this->render();
     }
     public function makeAskSupressionPage($id){
         $this->title = "Voulez-vous vraiment supprimer?";
@@ -328,6 +332,24 @@ class View{
             </form>";
         }
 
+        $this->render();
+    }
+    public function makeListModificationAccountPage($accountStorage){
+        $this->title = "Modification de compte";
+        $this->content = "<p>Liste des <strong>comptes</strong> :</p>";
+        $this->content .= "<ul>";
+        foreach($accountStorage->getTableauCompte() as $compte){
+            $this->content .= "<li>";
+            $this->content .= "<a href=" . $this->router->getModificationAccount($compte->getLogin()) . ">" . $compte->getLogin() . "</a>";
+            $this->content .= "</li>";
+        }
+        $this->content .= "</ul>";
+        $this->render();
+    }
+    public function makeModificationAccountPage($accountStorage,$login){
+        $this->title = "Modification de compte";
+        //TODO Faire les option que l'admin peu changer sur les comptes (pour moi c'est juste le status des utilisateures, et la supression de compte
+        $this->content = "<p>A faire les choses que l'on peu changer en fonction des comptes </p>";
         $this->render();
     }
     public function displayCarCreationSuccess($id){
