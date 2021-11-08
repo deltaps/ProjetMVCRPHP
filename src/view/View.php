@@ -346,10 +346,29 @@ class View{
         $this->content .= "</ul>";
         $this->render();
     }
-    public function makeModificationAccountPage($accountStorage,$login){
+    public function makeModificationAccountPage($login,$compte){
         $this->title = "Modification de compte";
-        //TODO Faire les option que l'admin peu changer sur les comptes (pour moi c'est juste le status des utilisateures, et la supression de compte
-        $this->content = "<p>A faire les choses que l'on peu changer en fonction des comptes </p>";
+        $this->content = "<form method='POST' action=" . $this->router->getApplyModificationAccount($login) ."> 
+        <div>
+            <label for='status'>Changement Status, Status actuelle : <strong> " . $compte->getStatus() . "</strong>  </label>
+            <input type='text' id='status' value=" . $compte->getStatus() . " name='status'>
+            <button type='submit'>Changer le status</button>
+        </div>
+        </form>";
+        $this->content .= "<form method='POST' action=". $this->router->getAccountAskDeletionURL($login) .">
+                            <button type='submit'>Supprimer ce compte </button>
+                            </form>";
+        $this->render();
+    }
+    public function makeAskDeletionAccountPage($login){
+        $this->title = "Supression de compte";
+        $this->content = "<p>êtes vous sûr de vouloir supprimer le compte ayant pour login : " . $login . " ?</p>
+        <form method='POST' action=". $this->router->getAccountDeletionURL($login) .">
+            <button type='submit'>Supprimer ce compte </button>
+        </form>";
+        $this->content .= "<form method='POST' action=". $this->router->getModificationAccount($login) .">
+            <button type='submit'>Annuler</button>
+        </form>";
         $this->render();
     }
     public function displayCarCreationSuccess($id){
@@ -361,5 +380,12 @@ class View{
       header('Location:' . $url);
       //TODO exercice 5 du tp 16
     }
-
+    public function displayCarSupressionSuccess(){
+        $url = $this->router->getList();
+        $this->router->POSTredirect($url,"rien pour le moment");
+    }
+    public function displayAccountSupressionSuccess(){
+        $url = $this->router->getMenuModificationAccount();
+        $this->router->POSTredirect($url,"rien pour le moment");
+    }
 }

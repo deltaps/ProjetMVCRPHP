@@ -108,7 +108,48 @@ class Router
         elseif(array_key_exists("modificationAccount",$_GET)){
             if($isConnected){
                 if($_SESSION['user']->getStatus() === "admin"){
-                    $affiche->makeModificationAccountPage($accountStorage,$_GET["modificationAccount"]);
+                    foreach ($accountStorage->getTableauCompte() as $compte) {
+                        if($compte->getLogin() === $_GET["modificationAccount"]){
+                            $vraieCompte = $compte;
+                        }
+                    }
+                    $affiche->makeModificationAccountPage($_GET["modificationAccount"],$vraieCompte);
+                }
+                else{
+                    $affiche->makeUnauthorizedPage();
+                }
+            }else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("applyModificationAccount",$_GET)){
+            if($isConnected){
+                if($_SESSION['user']->getStatus() === "admin"){
+                    $controller->modificationAccount($_GET["applyModificationAccount"],$_POST);
+                }
+                else{
+                    $affiche->makeUnauthorizedPage();
+                }
+            }else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("demandeSupressionCompte",$_GET)){
+            if($isConnected){
+                if($_SESSION['user']->getStatus() === "admin"){
+                    $affiche->makeAskDeletionAccountPage($_GET["demandeSupressionCompte"]);
+                }
+                else{
+                    $affiche->makeUnauthorizedPage();
+                }
+            }else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif (array_key_exists("supressionCompte",$_GET)){
+            if($isConnected){
+                if($_SESSION['user']->getStatus() === "admin"){
+                    $controller->supressionAccount($_GET["supressionCompte"]);
                 }
                 else{
                     $affiche->makeUnauthorizedPage();
@@ -177,5 +218,14 @@ class Router
     }
     public function getModificationAccount($id){
         return "?modificationAccount=" . $id;
+    }
+    public function getApplyModificationAccount($id){
+        return "?applyModificationAccount=" . $id;
+    }
+    public function getAccountAskDeletionURL($id){
+        return "?demandeSupressionCompte=" . $id;
+    }
+    public function getAccountDeletionURL($id){
+        return "?supressionCompte=" . $id;
     }
 }

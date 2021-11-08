@@ -50,7 +50,6 @@ class Controller{
                   $compt++;
               }
               $this->view->makeCarImageAdd($myKey);
-              //$this->view->displayCarCreationSuccess($myKey);
           }
           else{
               $_SESSION['currentNewCar'] = $carBuilder;
@@ -62,6 +61,9 @@ class Controller{
       }
     }
     public function isOwner($id){
+        if($_SESSION['user']->getStatus() === "admin"){
+            return true;
+        }
         return $this->carStorage->isOwner($id) == $_SESSION['user']->getNom();
     }
 
@@ -84,7 +86,7 @@ class Controller{
             if(file_exists("./img/" . $id . ".png")){
                 unlink("./img/" . $id . ".png");
             }
-            $this->showList();
+            $this->view->displayCarSupressionSuccess();
         }
         else{
             $this->view->makeUnauthorizedPage();
@@ -190,5 +192,21 @@ class Controller{
         else{
             $this->view->makeWelcomPage();
         }
+    }
+    public function modificationAccount($login,$data){
+        $allAccount = $this->accountStorage->getTableauCompte();
+        foreach ($allAccount as $compte) {
+            if($compte->getLogin() === $login){
+                $vraieCompte = $compte;
+            }
+        }
+        $newAccount = new Account($vraieCompte->getLogin(),$vraieCompte->getLogin(),$vraieCompte->getMDP(),$data['status']);
+        $this->accountStorage->modifyAccount($newAccount);
+        $this->view->makeModificationAccountPage($login,$newAccount);
+    }
+    public function supressionAccount($login){
+        $this->accountStorage->deleteAccount($login);
+        $this->view->displayAccountSupressionSuccess();
+        //$this->view->makeListModificationAccountPage($this->accountStorage);
     }
 }

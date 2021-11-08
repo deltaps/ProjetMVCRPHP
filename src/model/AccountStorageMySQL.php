@@ -31,8 +31,30 @@ class AccountStorageMySQL implements AccountStorage{
         $hash = password_hash($data["password"], PASSWORD_BCRYPT);
         $requete = "INSERT INTO comptes VALUES (:name,:login,:password,:status)";
         $stmt = $this->bd->prepare($requete);
-        $data = array(':name' => $data["login"], ':login' => $data["login"], ':password' => $hash, ':status' => "none");
+        $newData = array(':name' => $data["login"], ':login' => $data["login"], ':password' => $hash, ':status' => "none");
+        $stmt->execute($newData);
+        array_push($this->tableauCompte,new Account($data["login"],$data["login"],$hash,"none"));
+    }
+
+    public function deleteAccount($login){
+        $requete = "DELETE FROM comptes WHERE login=:login";
+        $stmt = $this->bd->prepare($requete);
+        $data = array(':login' => $login);
         $stmt->execute($data);
+        foreach ($this->tableauCompte as $key => $value) {
+            if($value->getLogin() === $login){
+                $trueKey = $key;
+            }
+        }
+        unset($this->tableauCompte[$trueKey]);
+    }
+    public function modifyAccount($compte){
+        $this->deleteAccount($compte->getLogin());
+        $requete = "INSERT INTO comptes VALUES (:name,:login,:password,:status)";
+        $stmt = $this->bd->prepare($requete);
+        $data = array(':name' => $compte->getLogin(), ':login' => $compte->getLogin(), ':password' => $compte->getMdp(), ':status' => $compte->getStatus());
+        $stmt->execute($data);
+        array_push($this->tableauCompte,$compte);
     }
 
     public function getTableauCompte(){
