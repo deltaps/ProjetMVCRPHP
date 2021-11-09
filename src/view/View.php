@@ -18,12 +18,13 @@ class View{
         <!doctype html>
         <html lang=\"fr\">
             <head>
+              <link rel='stylesheet' media='screen' type='text/css' href='style/style.css'/>
               <meta charset=\"utf-8\">
               <title>". $this->title ."</title>
             </head>
             <body>
                 <nav>
-                <ul>");
+                <ul class='menu'>");
           foreach ($this->menu as $key => $value) {
               if(empty($_SESSION['user'])){
                   if($key === 'creationObjet'){
@@ -57,7 +58,7 @@ class View{
                 </ul>
                 </nav>
                 <h1>". $this->title ."</h1>
-                " . $this->content . "
+                <p>" . $this->content . "</p>
             </body>
         </html>
         ");
@@ -93,13 +94,14 @@ class View{
 
     public function makeWelcomPage(){
         $this->title = "Bienvenue sur le site";
-        $this->content = "Vous pouvez rechercher une voiture";
+        $this->content = "Dans ce site, vous pouvez acceder a une liste de voiture poster par les utilisateurs,
+        il vous est aussi possible de crée un compte et de vous connecter afin de vous même poster votre propre voiture!";
         $this->render();
     }
 
     public function makeListPage($tableauVoitures){
         $this->title = "Liste de tout les voitures";
-        $this->content = "<ul>";
+        $this->content = "<ul id='liste'>";
         foreach ($tableauVoitures as $id => $voiture){
           $this->content = $this->content . "<li><a href='" . $this->router->getCarURL($id) . "'>" . $voiture->getName() . "</a></li>";
         }

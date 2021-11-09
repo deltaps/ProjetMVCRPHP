@@ -1,0 +1,75 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html{
+    width: 100vw;
+    height: 100vh;
+}
+/*
+body{
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: top;
+    background-image:url(http://bit.ly/2gPLxZ4);
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+}
+*/
+body {
+    background-color: rgb(175, 209, 232);
+    max-width: 60em;
+    margin: 2em auto;
+    font-family: Arial, Helvetica;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-align: center;
+}
+.menu {
+    display: flex;              /* Transformation en flexbox */
+    padding:0;                  /* Suppression des marges internes */
+    justify-content: center;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+.liste{
+    padding:0;                  /* Suppression des marges internes */
+    justify-content: center;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+ul li{
+    list-style-type: none;
+}
+ul a{
+    display:block;                /* Transformation en block */
+    min-width: 120px;             /* Largeur minimale des liens */
+
+    margin: 0.5rem;               /* Marges externes (1 valeurs = 4 directions) */
+    padding: 0.4rem 0;            /* Marges internes (2 valeurs = haut/bas et gauche/droite)*/
+    text-align: center;           /* Centrage du texte */
+    background-color: #1ABC9C;    /* Couleur d'arrière-plan */
+    color: #fff;                  /* Couleur du texte */
+    text-decoration: none;        /* Suppression du soulignement */
+    border: 1px solid #fff;       /* Ajout d'une bordure */
+    border-radius: 4px;
+    transition: all 1s ;
+}
+ul a:hover{
+    background-color: #ed2794;
+    color: #ffe843;
+    border-color: #ffe843;
+}
+h1{
+    margin-bottom: 50px;
+}
+
+
