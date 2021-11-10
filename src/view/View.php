@@ -311,10 +311,14 @@ class View{
     }
     public function makeCarImageModification($id){
         $this->title = "Modifications des images de la voiture";
-        $this->content = "<p>Souhaité vous ajouter, ou supprimer des images?</p>";
-        $this->content .= "<form method='POST' action='". $this->router->getCarSupressionImageURL($id) ."'>
+        $this->content = "<p>Souhaité vous ajouter, ou supprimer des images (si il en existe)?</p>";
+        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+        $nbImage = iterator_count($fi);
+        if($nbImage > 0){
+            $this->content .= "<form method='POST' action='". $this->router->getCarSupressionImageURL($id) ."'>
                             <button type='submit'>Supprimer des images</button>
                             </form>";
+        }
         $this->content .= "<form method='POST' action='". $this->router->getCarAddImageURL($id) ."'>
                             <button type='submit'>Ajouter des images</button>
                             </form>";

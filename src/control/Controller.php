@@ -214,6 +214,7 @@ class Controller{
         else{
             $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
             $compt = iterator_count($fi);
+            $compt .= 4;
         }
         foreach($_FILES['pj']['tmp_name'] as $name){
             move_uploaded_file($name, "./img/". $id . "/" . $compt . ".png");
