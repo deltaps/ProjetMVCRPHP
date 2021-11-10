@@ -98,14 +98,21 @@ class Controller{
         if($this->isOwner($id)){
             $this->carStorage->delete($id);
             if(file_exists("./img/" . $id . "/")){
-                $compt = 0;
-                while(true){
-                    if(file_exists("./img/" . $id . "/" . $compt . ".png")){
-                        unlink("./img/" . $id . "/" . $compt . ".png");
+                $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+                $nbImage = iterator_count($fi);
+                $alreadyTaken = array();
+                for($i = 0; $i < $nbImage; $i++){
+                    $compt = 0;
+                    while(true){
+                        if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                            unlink("./img/" . $id . "/" . $compt . ".png");
+                            array_push($alreadyTaken,$compt);
+                            break;
+                        }
                         $compt++;
-                    }
-                    else{
-                        break;
+                        if($compt > 100){
+                            break;
+                        }
                     }
                 }
                 rmdir("./img/".$id);
@@ -213,17 +220,6 @@ class Controller{
             $compt++;
         }
         $this->view->displayCarCreationSuccess($id);
-        /*
-      if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/". $id .".png")){
-          $this->view->displayCarCreationSuccess($id);
-      }
-      else {
-          if(file_exists("./img/" . $id . ".png")){
-              unlink("./img/" . $id . ".png");
-          }
-          $this->view->displayCarCreationSuccess($id);
-      }
-        */
     }
 
     public function newCar(){

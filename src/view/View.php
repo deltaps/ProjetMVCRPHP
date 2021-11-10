@@ -68,25 +68,27 @@ class View{
         $this->title = "Page sur " . $car->getName();
         $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
         elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
-        $this->content .= "<div>";
-        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
-        $nbImage = iterator_count($fi);
-        $alreadyTaken = array();
-        for($i = 0; $i < $nbImage; $i++){
-            $compt = 0;
-            while(true){
-                if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
-                    $this->content .= "<img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
-                    array_push($alreadyTaken,$compt);
-                    break;
-                }
-                $compt++;
-                if($compt > 100){
-                    break;
+        if(file_exists("./img/" . $id . "/")){
+            $this->content .= "<div>";
+            $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+            $nbImage = iterator_count($fi);
+            $alreadyTaken = array();
+            for($i = 0; $i < $nbImage; $i++){
+                $compt = 0;
+                while(true){
+                    if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                        $this->content .= "<img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
+                        array_push($alreadyTaken,$compt);
+                        break;
+                    }
+                    $compt++;
+                    if($compt > 100){
+                        break;
+                    }
                 }
             }
+            $this->content .= "</div>";
         }
-        $this->content .= "</div>";
         $this->content .= "<form method='POST' action='". $this->router->getCarAskDeletionURL($id) ."'>
                             <button type='submit'>Supprimer cette voiture </button>
                             </form>";
