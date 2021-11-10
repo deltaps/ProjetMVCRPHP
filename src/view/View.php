@@ -82,9 +82,6 @@ class View{
                         break;
                     }
                     $compt++;
-                    if($compt > 100){
-                        break;
-                    }
                 }
             }
             $this->content .= "</div>";
@@ -343,9 +340,6 @@ class View{
                     break;
                 }
                 $compt++;
-                if($compt > 100){
-                    break;
-                }
             }
         }
         $this->content .= "</ul>";
