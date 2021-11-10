@@ -9,7 +9,7 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(0), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount(), 'modificationComptes' => $this->router->getMenuModificationAccount());
+        $this->menu = array('Accueil' => '?', 'Liste' => $this->router->getList(0), 'Ajout de voiture' => $this->router->getCarCreationURL(), 'À propos' => $this->router->getAPropos(), 'Connexion' => $this->router->getLogin(), 'Deconnexion' => $this->router->getDisconnectUser(), 'Crée un compte' => $this->router->getCreationAccount(), 'Espace admin' => $this->router->getMenuModificationAccount());
         $this->feedback = $feedback;
     }
 
@@ -27,24 +27,24 @@ class View{
                 <ul class='menu'>");
           foreach ($this->menu as $key => $value) {
               if(empty($_SESSION['user'])){
-                  if($key === 'creationObjet'){
+                  if($key === 'Ajout de voiture'){
                       continue;
                   }
-                  if($key === "deconnexion"){
+                  if($key === "Deconnexion"){
                       continue;
                   }
-                  if($key === "modificationComptes"){
+                  if($key === "Espace admin"){
                       continue;
                   }
               }
               else{
-                  if($key === 'connexion'){
+                  if($key === 'Connexion'){
                       continue;
                   }
-                  if($key === "creationCompte"){
+                  if($key === "Crée un compte"){
                       continue;
                   }
-                  if($key === "modificationComptes"){
+                  if($key === "Espace admin"){
                       if($_SESSION['user']->getStatus() != "admin"){
                           continue;
                       }
@@ -64,13 +64,8 @@ class View{
         ");
     }
 
-    public function makeTestPage(){
-        $this->title = "Titre quelconque";
-        $this->content = "<p>Bonjour je ne sai spas ce que je fais ici, mais au moins je suis afficher</p>";
-        $this->render();
-    }
-
     public function makeCarPage($car,$id){
+        //TODO plusieurs image possible
         $this->title = "Page sur " . $car->getName();
         $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
         elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
@@ -94,14 +89,14 @@ class View{
 
     public function makeWelcomPage(){
         $this->title = "Bienvenue sur le site";
-        $this->content = "Dans ce site, vous pouvez acceder a une liste de voiture poster par les utilisateurs,
-        il vous est aussi possible de crée un compte et de vous connecter afin de vous même poster votre propre voiture!";
+        $this->content = "Dans ce site, vous pouvez accéder à une liste de voitures poster par les utilisateurs,
+        il vous est aussi possible de créer un compte et de vous connecter afin de vous-même poster votre propre voiture!";
         $this->render();
     }
 
     public function makeListPage($tableauVoitures,$taille){
         $taille = round($taille);
-        $this->title = "Liste de tout les voitures";
+        $this->title = "Liste de toutes les voitures";
         $this->content = "<ul id='liste'>";
         foreach ($tableauVoitures as $id => $voiture){
           $this->content = $this->content . "<li><a href='" . $this->router->getCarURL($id) . "'>" . $voiture->getName() . "</a></li>";
@@ -146,7 +141,7 @@ class View{
     public function makeCarCreationPage(CarBuilder $carBuilder){
       if($carBuilder->getData() === null){
         $this->title = "Ajout d'une voiture";
-        $this->content = "<form method='POST' action=". $this->router->getCarSaveURL().">
+        $this->content = "<form method='POST' action='". $this->router->getCarSaveURL()."'>
             <div>
                 <label for='name'>Nom :</label>
                 <input type='text' id='name' name='name'>
@@ -214,14 +209,14 @@ class View{
     public function makeCarImageAdd($id){
         $this->title = "Ajout d'une image";
         $this->content = "<form enctype='multipart/form-data' action=" . $this->router->getUploadUrl($id) . " method='POST'>
-        <input type='file' name='pj'>
+        <input type='file' name='pj[]' multiple>
         <button type='submit'>Valider</button>
         </form>";
         $this->render();
     }
     public function makeAskSupressionPage($id){
         $this->title = "Voulez-vous vraiment supprimer?";
-        $this->content = "<p>êtes vous sûr de vouloir supprimer la voiture possédant l'id : ". $id . "?</p>";
+        $this->content = "<p>Êtes-vous sûr de vouloir supprimer la voiture possédant l'id : ". $id . "?</p>";
         $this->content .= "<form method='POST' action=". $this->router->getCarDeletionURL($id) .">
                             <button type='submit'>Supprimer la voiture </button>";
         $this->render();
@@ -322,7 +317,7 @@ class View{
     }
     public function makeUnauthorizedPage(){
         $this->title = "Accées non autorisé";
-        $this->content = "<p>Vous ne pouvez pas accéder a cette page avec votre status actuelle</p>";
+        $this->content = "<p>Vous ne pouvez pas accéder à cette page avec votre status actuel</p>";
         $this->render();
     }
     public function makeCreationAccountPage($error){
@@ -330,7 +325,7 @@ class View{
         if($error === ""){
             $this->content = "<form method='POST' action=". $this->router->getAccountSend().">
             <div>
-                <label for='login'>login :</label>
+                <label for='login'>Identifiant :</label>
                 <input type='text' id='login' name='login'>
             </div>
             <div>
@@ -346,7 +341,7 @@ class View{
             $this->content = "<p>Erreur : ". $error ."</p>
             <form method='POST' action=". $this->router->getAccountSend().">
             <div>
-                <label for='login'>login :</label>
+                <label for='login'>Identifiant :</label>
                 <input type='text' id='login' name='login'>
             </div>
             <div>
@@ -366,7 +361,7 @@ class View{
         $this->content = "<p>Liste des <strong>comptes</strong> :</p>";
         $this->content .= "<ul>";
         foreach($accountStorage->getTableauCompte() as $compte){
-            $this->content .= "<li>";
+            $this->content .= "<li class='liste'>";
             $this->content .= "<a href=" . $this->router->getModificationAccount($compte->getLogin()) . ">" . $compte->getLogin() . "</a>";
             $this->content .= "</li>";
         }
@@ -389,7 +384,7 @@ class View{
     }
     public function makeAskDeletionAccountPage($login){
         $this->title = "Supression de compte";
-        $this->content = "<p>êtes vous sûr de vouloir supprimer le compte ayant pour login : " . $login . " ?</p>
+        $this->content = "<p>Êtes-vous sûr de vouloir supprimer le compte ayant pour login : " . $login . " ?</p>
         <form method='POST' action=". $this->router->getAccountDeletionURL($login) .">
             <button type='submit'>Supprimer ce compte </button>
         </form>";

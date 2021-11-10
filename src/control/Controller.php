@@ -143,6 +143,14 @@ class Controller{
     }
 
     public function uploadPage($id){
+        mkdir("img/" . $id . "/", 0777,true);
+        $compt = 0;
+        foreach($_FILES['pj']['tmp_name'] as $name){
+            move_uploaded_file($name, "./img/". $id . "/" . $compt . ".png");
+            $compt++;
+        }
+        $this->view->displayCarCreationSuccess($id);
+        /*
       if (move_uploaded_file($_FILES['pj']['tmp_name'], "./img/". $id .".png")){
           $this->view->displayCarCreationSuccess($id);
       }
@@ -152,6 +160,7 @@ class Controller{
           }
           $this->view->displayCarCreationSuccess($id);
       }
+        */
     }
 
     public function newCar(){
