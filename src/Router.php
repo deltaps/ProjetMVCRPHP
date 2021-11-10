@@ -75,6 +75,38 @@ class Router
                 $affiche->makeUnauthorizedPage();
             }
         }
+        elseif(array_key_exists("demandeImageModification",$_GET)){
+            if($isConnected){
+                $controller->optionImageModification($_GET["demandeImageModification"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("demandeImageSupression",$_GET)){
+            if($isConnected){
+                $controller->optionImageSupression($_GET["demandeImageSupression"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("demandeImageNumSupression",$_GET)){
+            if($isConnected){
+                $controller->imageSupression($_GET["demandeImageNumSupression"],$_GET["image"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
+        elseif(array_key_exists("demandeImageAjout",$_GET)){
+            if($isConnected){
+                $affiche->makeCarImageAdd($_GET["demandeImageAjout"]);
+            }
+            else{
+                $affiche->makeUnauthorizedPage();
+            }
+        }
         elseif(array_key_exists("propo",$_GET)){
             $affiche->makeAproposPage();
         }
@@ -188,6 +220,18 @@ class Router
     }
     public function getCarModificationURL($id){
         return "?modification=" . $id;
+    }
+    public function getCarOptionImageModificationURL($id){
+        return "?demandeImageModification=" . $id;
+    }
+    public function getCarSupressionImageURL($id){
+        return "?demandeImageSupression=" . $id;
+    }
+    public function getCarSupressionAskImageURL($id,$image){
+        return "?demandeImageNumSupression=" . $id . "&image=" . $image;
+    }
+    public function getCarAddImageURL($id){
+        return "?demandeImageAjout=" . $id;
     }
     public function getUploadUrl($id){
       return "?upload=" . $id;

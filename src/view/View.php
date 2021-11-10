@@ -65,18 +65,36 @@ class View{
     }
 
     public function makeCarPage($car,$id){
-        //TODO plusieurs image possible
         $this->title = "Page sur " . $car->getName();
         $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
         elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
-        if(file_exists("./img/" . $id . ".png")){
-            $this->content .= "<div><img src='./img/" . $id . ".png' alt='Image voiture'></div>";
+        $this->content .= "<div>";
+        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+        $nbImage = iterator_count($fi);
+        $alreadyTaken = array();
+        for($i = 0; $i < $nbImage; $i++){
+            $compt = 0;
+            while(true){
+                if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                    $this->content .= "<img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
+                    array_push($alreadyTaken,$compt);
+                    break;
+                }
+                $compt++;
+                if($compt > 100){
+                    break;
+                }
+            }
         }
+        $this->content .= "</div>";
         $this->content .= "<form method='POST' action='". $this->router->getCarAskDeletionURL($id) ."'>
                             <button type='submit'>Supprimer cette voiture </button>
                             </form>";
         $this->content .= "<form method='POST' action='". $this->router->getCarOptionModificationURL($id) ."'>
                             <button type='submit'>Modifier cette voiture </button>
+                            </form>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarOptionImageModificationURL($id) ."'>
+                            <button type='submit'>Modifier image de la voiture</button>
                             </form>";
         $this->render();
     }
@@ -95,7 +113,7 @@ class View{
     }
 
     public function makeListPage($tableauVoitures,$taille){
-        $taille = round($taille);
+        $taille = ceil($taille);
         $this->title = "Liste de toutes les voitures";
         $this->content = "<ul id='liste'>";
         foreach ($tableauVoitures as $id => $voiture){
@@ -207,7 +225,7 @@ class View{
       }
     }
     public function makeCarImageAdd($id){
-        $this->title = "Ajout d'une image";
+        $this->title = "Ajout d'une ou plusieurs image";
         $this->content = "<form enctype='multipart/form-data' action=" . $this->router->getUploadUrl($id) . " method='POST'>
         <input type='file' name='pj[]' multiple>
         <button type='submit'>Valider</button>
@@ -288,6 +306,44 @@ class View{
             </form>";
             $this->render();
         }
+    }
+    public function makeCarImageModification($id){
+        $this->title = "Modifications des images de la voiture";
+        $this->content = "<p>Souhaité vous ajouter, ou supprimer des images?</p>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarSupressionImageURL($id) ."'>
+                            <button type='submit'>Supprimer des images</button>
+                            </form>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarAddImageURL($id) ."'>
+                            <button type='submit'>Ajouter des images</button>
+                            </form>";
+        $this->render();
+    }
+    public function makeCarImageSupression($id){
+        $this->title = "Supression des images";
+        $compt = 0;
+        $this->content = "<ul>";
+        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+        $nbImage = iterator_count($fi);
+        $alreadyTaken = array();
+        for($i = 0; $i < $nbImage; $i++){
+            $compt = 0;
+            while(true){
+                if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                    $this->content .= "<li><form method='POST' action='". $this->router->getCarSupressionAskImageURL($id,$compt) ."'>
+                    <img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>
+                    <button type='submit'>Supression de cette image</button>
+                    </form></li>";
+                    array_push($alreadyTaken,$compt);
+                    break;
+                }
+                $compt++;
+                if($compt > 100){
+                    break;
+                }
+            }
+        }
+        $this->content .= "</ul>";
+        $this->render();
     }
     public function makeAproposPage(){
         $this->title = "A propos";
@@ -403,7 +459,7 @@ class View{
       //TODO exercice 5 du tp 16
     }
     public function displayCarSupressionSuccess(){
-        $url = $this->router->getList();
+        $url = $this->router->getList(0);
         $this->router->POSTredirect($url,"rien pour le moment");
     }
     public function displayAccountSupressionSuccess(){

@@ -41,6 +41,7 @@ class Controller{
             $compteur++;
         }
         $nbPage = sizeof($allCar) / 5;
+        //var_dump($nbPage);
         $this->view->makeListPage($carList,$nbPage);
     }
     public function showDebugPage(){
@@ -96,9 +97,24 @@ class Controller{
     public function deleteCar($id){
         if($this->isOwner($id)){
             $this->carStorage->delete($id);
+            if(file_exists("./img/" . $id . "/")){
+                $compt = 0;
+                while(true){
+                    if(file_exists("./img/" . $id . "/" . $compt . ".png")){
+                        unlink("./img/" . $id . "/" . $compt . ".png");
+                        $compt++;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                rmdir("./img/".$id);
+            }
+            /*
             if(file_exists("./img/" . $id . ".png")){
                 unlink("./img/" . $id . ".png");
             }
+            */
             $this->view->displayCarSupressionSuccess();
         }
         else{
@@ -130,8 +146,7 @@ class Controller{
             if($carBuilder->isValid()){
                 $car = $carBuilder->createCar();
                 $this->carStorage->modify($id,$car);
-                $this->view->makeCarImageAdd($id);
-                //$this->view->displayCarCreationSuccess($id);
+                $this->view->makeCarPage($car,$id);
             }
             else{
                 $this->view->makeCarModificationPage($id,$carBuilder,true);
@@ -141,10 +156,58 @@ class Controller{
             $this->view->makeUnauthorizedPage();
         }
     }
+    public function optionImageModification($id){
+        if($this->carStorage->read($id) != null){
+            if($this->isOwner($id)){
+                $this->view->makeCarImageModification($id);
+            }
+            else{
+                $this->view->makeUnauthorizedPage();
+            }
+        }
+        else{
+            $this->view->makeErrorPage("La voiture n'existe pas");
+        }
+    }
+    public function optionImageSupression($id){
+        if($this->carStorage->read($id) != null){
+            if($this->isOwner($id)){
+                $this->view->makeCarImageSupression($id);
+            }
+            else{
+                $this->view->makeUnauthorizedPage();
+            }
+        }
+        else{
+            $this->view->makeErrorPage("La voiture n'existe pas");
+        }
+    }
+    public function imageSupression($id,$image){
+        if($this->carStorage->read($id) != null){
+            if($this->isOwner($id)){
+                if(file_exists("./img/" . $id . "/" . $image . ".png")){
+                    unlink("./img/" . $id . "/" . $image . ".png");
+                }
+                $this->view->makeCarPage($this->carStorage->read($id),$id);
+            }
+            else{
+                $this->view->makeUnauthorizedPage();
+            }
+        }
+        else{
+            $this->view->makeErrorPage("La voiture n'existe pas");
+        }
+    }
 
     public function uploadPage($id){
-        mkdir("img/" . $id . "/", 0777,true);
-        $compt = 0;
+        if(!file_exists("./img/" . $id . "/")){
+            mkdir("img/" . $id . "/", 0777,true);
+            $compt = 0;
+        }
+        else{
+            $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+            $compt = iterator_count($fi);
+        }
         foreach($_FILES['pj']['tmp_name'] as $name){
             move_uploaded_file($name, "./img/". $id . "/" . $compt . ".png");
             $compt++;
