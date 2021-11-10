@@ -9,7 +9,7 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount(), 'modificationComptes' => $this->router->getMenuModificationAccount());
+        $this->menu = array('accueil' => '?', 'liste' => $this->router->getList(0), 'creationObjet' => $this->router->getCarCreationURL(), 'propos' => $this->router->getAPropos(), 'connexion' => $this->router->getLogin(), 'deconnexion' => $this->router->getDisconnectUser(), 'creationCompte' => $this->router->getCreationAccount(), 'modificationComptes' => $this->router->getMenuModificationAccount());
         $this->feedback = $feedback;
     }
 
@@ -51,14 +51,14 @@ class View{
                   }
               }
             echo("<li>");
-            echo("<a href=" . $value . ">". $key . "</a>");
+            echo("<a href='" . $value . "'>". $key . "</a>");
             echo("</li>");
           }
          echo("
                 </ul>
                 </nav>
                 <h1>". $this->title ."</h1>
-                <p>" . $this->content . "</p>
+                <div>" . $this->content . "</div>
             </body>
         </html>
         ");
@@ -75,12 +75,12 @@ class View{
         $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
         elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
         if(file_exists("./img/" . $id . ".png")){
-            $this->content .= "<div><img src='./img/" . $id . ".png'></div>";
+            $this->content .= "<div><img src='./img/" . $id . ".png' alt='Image voiture'></div>";
         }
-        $this->content .= "<form method='POST' action=". $this->router->getCarAskDeletionURL($id) .">
+        $this->content .= "<form method='POST' action='". $this->router->getCarAskDeletionURL($id) ."'>
                             <button type='submit'>Supprimer cette voiture </button>
                             </form>";
-        $this->content .= "<form method='POST' action=". $this->router->getCarOptionModificationURL($id) .">
+        $this->content .= "<form method='POST' action='". $this->router->getCarOptionModificationURL($id) ."'>
                             <button type='submit'>Modifier cette voiture </button>
                             </form>";
         $this->render();
@@ -99,15 +99,40 @@ class View{
         $this->render();
     }
 
-    public function makeListPage($tableauVoitures){
+    public function makeListPage($tableauVoitures,$taille){
+        $taille = round($taille);
         $this->title = "Liste de tout les voitures";
         $this->content = "<ul id='liste'>";
         foreach ($tableauVoitures as $id => $voiture){
           $this->content = $this->content . "<li><a href='" . $this->router->getCarURL($id) . "'>" . $voiture->getName() . "</a></li>";
         }
         $this->content = $this->content . "</ul>";
+        if($_GET["liste"] == 0){
+            $previous = 0;
+        }
+        else{
+            $previous = $_GET["liste"] - 1;
+        }
+        $this->content .= "<hr><nav aria-label='pagination'> <ul class='pagination'>
+        <li><a href='" . $this->router->getList($previous) ."'><span aria-hidden='true'>«</span></a></li>";
+        for($i = 0; $i < $taille; $i++){
+            if($i == $_GET["liste"]){
+                $this->content .= "<li><a href='' aria-current='page'>" . $i . "</a></li>";
+            }
+            else {
+                $this->content .= "<li><a href='" . $this->router->getList($i) . "'>" . $i . "</a></li>";
+            }
+        }
+        if($_GET["liste"] >= $taille-2){
+            $next = $taille-1;
+        }
+        else{
+            $next = $_GET["liste"] + 1;
+        }
+        $this->content .= "<li><a href='" . $this->router->getList($next) . "'><span aria-hidden='true'>»</span></a></li></ul></nav>";
         $this->render();
     }
+
     public function makeDebugPage($variable) {
 	      $this->title = 'Debug';
 	      $this->content = '<pre>'.htmlspecialchars(var_export($variable, true)).'</pre>';

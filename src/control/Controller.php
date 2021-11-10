@@ -27,8 +27,21 @@ class Controller{
     public function showWelcomPage(){
         $this->view->makeWelcomPage();
     }
-    public function showList(){
-        $this->view->makeListPage($this->carStorage->readAll());
+    public function showList($page){
+        $allCar = $this->carStorage->readAll();
+        $carList = array();
+        $compteur = 0;
+        foreach ($allCar as $key => $car){
+            if($compteur > $page*5+5-1){// A changer pour changer la pagination
+                break;
+            }
+            if($compteur >= $page*5){// A changer pour changer la pagination
+                $carList[$key] = $car;
+            }
+            $compteur++;
+        }
+        $nbPage = sizeof($allCar) / 5;
+        $this->view->makeListPage($carList,$nbPage);
     }
     public function showDebugPage(){
       $test = "medor";

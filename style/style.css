@@ -7,41 +7,26 @@ html{
     width: 100vw;
     height: 100vh;
 }
-/*
-body{
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: top;
-    background-image:url(http://bit.ly/2gPLxZ4);
-    width: 100%;
-    height: 100%;
-    font-family: Arial, Helvetica;
-    letter-spacing: 0.02em;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    text-align: center;
-}
-*/
+
 body {
     background-color: rgb(175, 209, 232);
     max-width: 60em;
     margin: 2em auto;
-    font-family: Arial, Helvetica;
+    font-family: Arial, Helvetica, serif;
     letter-spacing: 0.02em;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     text-align: center;
 }
 .menu {
-    display: flex;              /* Transformation en flexbox */
-    padding:0;                  /* Suppression des marges internes */
+    display: flex;
+    padding:0;
     justify-content: center;
     margin-bottom: 50px;
     margin-top: 40px;
 }
 .liste{
-    padding:0;                  /* Suppression des marges internes */
+    padding:0;
     justify-content: center;
     margin-bottom: 50px;
     margin-top: 40px;
@@ -50,16 +35,16 @@ ul li{
     list-style-type: none;
 }
 ul a{
-    display:block;                /* Transformation en block */
-    min-width: 120px;             /* Largeur minimale des liens */
+    display:block;
+    min-width: 120px;
 
-    margin: 0.5rem;               /* Marges externes (1 valeurs = 4 directions) */
-    padding: 0.4rem 0;            /* Marges internes (2 valeurs = haut/bas et gauche/droite)*/
-    text-align: center;           /* Centrage du texte */
-    background-color: #1ABC9C;    /* Couleur d'arrière-plan */
-    color: #fff;                  /* Couleur du texte */
-    text-decoration: none;        /* Suppression du soulignement */
-    border: 1px solid #fff;       /* Ajout d'une bordure */
+    margin: 0.5rem;
+    padding: 0.4rem 0;
+    text-align: center;
+    background-color: #1ABC9C;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #fff;
     border-radius: 4px;
     transition: all 1s ;
 }
@@ -70,6 +55,31 @@ ul a:hover{
 }
 h1{
     margin-bottom: 50px;
+}
+img{
+    width:10em;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 1em;
+    padding-top: .5em;
+}
+
+.pagination {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.pagination a[aria-current="page"] {
+    background-color: #333;
+    color: #fff;
+}
+hr{
+    margin-top: 1em;
 }
 
 

@@ -22,7 +22,7 @@ class Router
           $controller->uploadPage($_GET["upload"]);
         }
         elseif(array_key_exists("liste",$_GET)){
-            $controller->showList();
+            $controller->showList($_GET["liste"]);
         }
         elseif(array_key_exists("debug",$_GET)){
           $controller->showDebugPage();
@@ -192,8 +192,8 @@ class Router
     public function getUploadUrl($id){
       return "?upload=" . $id;
     }
-    public function getList(){
-      return "?liste";
+    public function getList($page){
+      return "?liste=" . $page;
     }
     public function getAPropos(){
         return "?propo";
