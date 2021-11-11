@@ -1,8 +1,8 @@
 <?php
 include_once 'view/View.php';
 include_once 'control/Controller.php';
-class Router
-{
+class Router{
+
     public function main($carStorage,$accountStorage){
         session_start();
         $feedback = key_exists("feedback", $_SESSION) ? $_SESSION['feedback'] : "";
@@ -143,6 +143,7 @@ class Router
                     foreach ($accountStorage->getTableauCompte() as $compte) {
                         if($compte->getLogin() === $_GET["modificationAccount"]){
                             $vraieCompte = $compte;
+                            break;
                         }
                     }
                     $affiche->makeModificationAccountPage($_GET["modificationAccount"],$vraieCompte);
@@ -199,7 +200,7 @@ class Router
         header("Location: ".htmlspecialchars_decode($url), true, 303);
         die;
     }
-    //TODO faire en sorte que les liens soit du type /....
+
     public function getCarURL($id){
         return "?id=" . $id;
     }

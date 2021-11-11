@@ -2,7 +2,6 @@
 include_once 'model/Car.php';
 include_once 'model/CarStorage.php';
 include_once 'model/CarBuilder.php';
-include_once 'model/AccountStorageStub.php';
 include_once 'model/AccountStorage.php';
 class Controller{
     protected $view;
@@ -97,31 +96,23 @@ class Controller{
     public function deleteCar($id){
         if($this->isOwner($id)){
             $this->carStorage->delete($id);
-            if(file_exists("./img/" . $id . "/")){
-                $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+            if(file_exists("./upload/" . $id . "/")){
+                $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
                 $nbImage = iterator_count($fi);
                 $alreadyTaken = array();
                 for($i = 0; $i < $nbImage; $i++){
                     $compt = 0;
                     while(true){
-                        if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
-                            unlink("./img/" . $id . "/" . $compt . ".png");
+                        if(file_exists("./upload/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                            unlink("./upload/" . $id . "/" . $compt . ".png");
                             array_push($alreadyTaken,$compt);
                             break;
                         }
                         $compt++;
-                        if($compt > 100){
-                            break;
-                        }
                     }
                 }
-                rmdir("./img/".$id);
+                rmdir("./upload/".$id);
             }
-            /*
-            if(file_exists("./img/" . $id . ".png")){
-                unlink("./img/" . $id . ".png");
-            }
-            */
             $this->view->displayCarSupressionSuccess();
         }
         else{
@@ -192,8 +183,8 @@ class Controller{
     public function imageSupression($id,$image){
         if($this->carStorage->read($id) != null){
             if($this->isOwner($id)){
-                if(file_exists("./img/" . $id . "/" . $image . ".png")){
-                    unlink("./img/" . $id . "/" . $image . ".png");
+                if(file_exists("./upload/" . $id . "/" . $image . ".png")){
+                    unlink("./upload/" . $id . "/" . $image . ".png");
                 }
                 $this->view->makeCarPage($this->carStorage->read($id),$id);
             }
@@ -207,18 +198,18 @@ class Controller{
     }
 
     public function uploadPage($id){
-        if(!file_exists("./img/" . $id . "/")){
-            mkdir("img/" . $id . "/", 0777,true);
-            $compt = 0;
-        }
-        else{
-            $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
-            $compt = iterator_count($fi);
-            $compt .= 2;
+        if(!file_exists("./upload/" . $id . "/")){
+            mkdir("upload/" . $id . "/", 0777,true);
         }
         foreach($_FILES['pj']['tmp_name'] as $name){
-            move_uploaded_file($name, "./img/". $id . "/" . $compt . ".png");
-            $compt++;
+            $compt = 0;
+            while(true){
+                if (!file_exists("./upload/" . $id . "/" . $compt . ".png")) {
+                    move_uploaded_file($name, "./upload/" . $id . "/" . $compt . ".png");
+                    break;
+                }
+                $compt++;
+            }
         }
         $this->view->displayCarCreationSuccess($id);
     }
@@ -289,6 +280,5 @@ class Controller{
     public function supressionAccount($login){
         $this->accountStorage->deleteAccount($login);
         $this->view->displayAccountSupressionSuccess();
-        //$this->view->makeListModificationAccountPage($this->accountStorage);
     }
 }

@@ -17,9 +17,6 @@ class AuthentificationManager{
         }
         return false;
     }
-    public function isUserConnected(){
-        return !empty($_SESSION);
-    }
     public function isAdminConnected(){
         if(!empty($_SESSION)){
             if(key_exists('user',$_SESSION)){

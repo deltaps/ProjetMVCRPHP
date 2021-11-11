@@ -1,5 +1,6 @@
 <?php
-
+include_once 'model/Account.php';
+include_once 'model/AuthentificationManager.php';
 class AccountStorageMySQL implements AccountStorage{
 
     private $authManager;

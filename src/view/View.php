@@ -9,7 +9,7 @@ class View{
 
     public function __construct($router,$feedback){
         $this->router = $router;
-        $this->menu = array('Accueil' => '?', 'Liste' => $this->router->getList(0), 'Ajout de voiture' => $this->router->getCarCreationURL(), 'À propos' => $this->router->getAPropos(), 'Connexion' => $this->router->getLogin(), 'Deconnexion' => $this->router->getDisconnectUser(), 'Crée un compte' => $this->router->getCreationAccount(), 'Espace admin' => $this->router->getMenuModificationAccount());
+        $this->menu = array('Accueil' => '?', 'Liste' => $this->router->getList(0), 'Ajout de voiture' => $this->router->getCarCreationURL(), 'À propos' => $this->router->getAPropos(), 'Connexion' => $this->router->getLogin(), 'Déconnexion' => $this->router->getDisconnectUser(), 'Crée un compte' => $this->router->getCreationAccount(), 'Espace admin' => $this->router->getMenuModificationAccount());
         $this->feedback = $feedback;
     }
 
@@ -30,7 +30,7 @@ class View{
                   if($key === 'Ajout de voiture'){
                       continue;
                   }
-                  if($key === "Deconnexion"){
+                  if($key === "Déconnexion"){
                       continue;
                   }
                   if($key === "Espace admin"){
@@ -59,6 +59,10 @@ class View{
                 </nav>
                 <h1>". $this->title ."</h1>
                 <div>" . $this->content . "</div>
+                <hr>
+                <footer> 
+                    <p class='foot'>Site réalisé par Pronost Sacha et Siepka Aurélien</p>
+                </footer>
             </body>
         </html>
         ");
@@ -67,17 +71,17 @@ class View{
     public function makeCarPage($car,$id){
         $this->title = "Page sur " . $car->getName();
         $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
-        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " de torque, et elle a été faite en " . $car->getYear() . "</div>";
-        if(file_exists("./img/" . $id . "/")){
-            $this->content .= "<div>";
-            $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " N m de torque, et elle a été faite en " . $car->getYear() . "</div>";
+        if(file_exists("./upload/" . $id . "/")){
+            $this->content .= "<div class='images'>";
+            $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
             $nbImage = iterator_count($fi);
             $alreadyTaken = array();
             for($i = 0; $i < $nbImage; $i++){
                 $compt = 0;
                 while(true){
-                    if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
-                        $this->content .= "<img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
+                    if(file_exists("./upload/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                        $this->content .= "<img src='./upload/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
                         array_push($alreadyTaken,$compt);
                         break;
                     }
@@ -164,7 +168,7 @@ class View{
                 <input type='text' id='name' name='name'>
             </div>
             <div>
-                <label for='brand'>marque:</label>
+                <label for='brand'>Marque:</label>
                 <input type='text' id='brand' name='brand'>
             </div>
             <div>
@@ -194,7 +198,7 @@ class View{
             <div>
                 <label for='name'>Nom :</label>
                 <input type='text' id='name' name='name' value=". $data["name"] .">
-                 ". $error["name"] ."
+                ". $error["name"] ."
             </div>
             <div>
                 <label for='brand'>Marque :</label>
@@ -229,6 +233,9 @@ class View{
         <input type='file' name='pj[]' multiple>
         <button type='submit'>Valider</button>
         </form>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarURL($id) ."'>
+                            <button type='submit'>Annuler</button>
+                            </form>";
         $this->render();
     }
     public function makeAskSupressionPage($id){
@@ -236,6 +243,9 @@ class View{
         $this->content = "<p>Êtes-vous sûr de vouloir supprimer la voiture possédant l'id : ". $id . "?</p>";
         $this->content .= "<form method='POST' action=". $this->router->getCarDeletionURL($id) .">
                             <button type='submit'>Supprimer la voiture </button>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarURL($id) ."'>
+                            <button type='submit'>Retour</button>
+                            </form>";
         $this->render();
     }
     public function makeCarModificationPage($id, CarBuilder $carBuilder, $already){
@@ -309,15 +319,20 @@ class View{
     public function makeCarImageModification($id){
         $this->title = "Modifications des images de la voiture";
         $this->content = "<p>Souhaité vous ajouter, ou supprimer des images (si il en existe)?</p>";
-        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
-        $nbImage = iterator_count($fi);
-        if($nbImage > 0){
-            $this->content .= "<form method='POST' action='". $this->router->getCarSupressionImageURL($id) ."'>
+        if(file_exists("./upload/" . $id ."/")){
+            $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+            $nbImage = iterator_count($fi);
+            if($nbImage > 0){
+                $this->content .= "<form method='POST' action='". $this->router->getCarSupressionImageURL($id) ."'>
                             <button type='submit'>Supprimer des images</button>
                             </form>";
+            }
         }
         $this->content .= "<form method='POST' action='". $this->router->getCarAddImageURL($id) ."'>
                             <button type='submit'>Ajouter des images</button>
+                            </form>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarURL($id) ."'>
+                            <button type='submit'>Retour</button>
                             </form>";
         $this->render();
     }
@@ -325,15 +340,15 @@ class View{
         $this->title = "Supression des images";
         $compt = 0;
         $this->content = "<ul>";
-        $fi = new FilesystemIterator("./img/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
+        $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
         $nbImage = iterator_count($fi);
         $alreadyTaken = array();
         for($i = 0; $i < $nbImage; $i++){
             $compt = 0;
             while(true){
-                if(file_exists("./img/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
+                if(file_exists("./upload/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
                     $this->content .= "<li><form method='POST' action='". $this->router->getCarSupressionAskImageURL($id,$compt) ."'>
-                    <img src='./img/" . $id . "/" . $compt . ".png' alt='Image voiture'>
+                    <img src='./upload/" . $id . "/" . $compt . ".png' alt='Image voiture'>
                     <button type='submit'>Supression de cette image</button>
                     </form></li>";
                     array_push($alreadyTaken,$compt);
@@ -343,19 +358,36 @@ class View{
             }
         }
         $this->content .= "</ul>";
+        $this->content .= "<form method='POST' action='". $this->router->getCarURL($id) ."'>
+                            <button type='submit'>Retour</button>
+                            </form>";
         $this->render();
     }
     public function makeAproposPage(){
-        $this->title = "A propos";
+        $this->title = "À propos";
         $this->content = "<p> PRONOST Sacha, Numéro étudiant :<strong> 21901956 </strong> Groupe : <strong>4B</strong> </p>
         <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p>
+        ";
+        $this->content .= "<h3>Liste des <strong>compléments</strong> réalisées</h3>
+        <ul class='propos'>
+            <li> Un objet peut être illustré par zéro, une ou plusieurs images (modifiables) uploadées par le créateur de l'objet. </li>
+            <li>Gestion par un admin des comptes utilisateurs</li>
+            <li>Pagination de la liste</li>
+        </ul>
+        <h3>Répartition des <strong>tâches</strong> dans le groupe:</h3>
+        <ul class='propos'>
+            <li><strong>Réalisation de base</strong>: Faite par nous deux au fur et à mesure des TP</li>
+            <li><strong>Images</strong> : Sacha</li>
+            <li><strong>Pagination</strong> : Aurélien</li>
+            <li><strong>Gestion par un admin</strong> : Sacha/Aurélien</li>
+        </ul>
         ";
         $this->render();
     }
     public function makeLoginFormPage(){
         $this->title = "Connexion";
         $this->content = "<form method='POST' action=". $this->router->getLoginSend().">
-        <label>Nom : <input type='text' name='login' /></label>
+        <label>Login : <input type='text' name='login' /></label>
         <label>Mot de passe : <input type='password' name='password' /></label>
         <button>Se connecter</button>
         </form>";
@@ -415,9 +447,9 @@ class View{
     public function makeListModificationAccountPage($accountStorage){
         $this->title = "Modification de compte";
         $this->content = "<p>Liste des <strong>comptes</strong> :</p>";
-        $this->content .= "<ul>";
+        $this->content .= "<ul id='liste'>";
         foreach($accountStorage->getTableauCompte() as $compte){
-            $this->content .= "<li class='liste'>";
+            $this->content .= "<li>";
             $this->content .= "<a href=" . $this->router->getModificationAccount($compte->getLogin()) . ">" . $compte->getLogin() . "</a>";
             $this->content .= "</li>";
         }
