@@ -24,7 +24,8 @@ class View{
             </head>
             <body>
                 <nav>
-                <ul class='menu'>");
+                    <ul class='menu'>
+                        ");
           foreach ($this->menu as $key => $value) {
               if(empty($_SESSION['user'])){
                   if($key === 'Ajout de voiture'){
@@ -50,15 +51,17 @@ class View{
                       }
                   }
               }
-            echo("<li>");
-            echo("<a href='" . $value . "'>". $key . "</a>");
-            echo("</li>");
+            echo("<li>
+                           <a href='" . $value . "'>". $key . "</a>
+                        </li>
+                        "); // Je ne comprend pas pourquoi, mais c'est le seule moyen de faire une belle indentation dans le code source de la page
           }
-         echo("
-                </ul>
+         echo("</ul>
                 </nav>
                 <h1>". $this->title ."</h1>
-                <div>" . $this->content . "</div>
+                <div>
+                    " . $this->content . "
+                </div>
                 <hr>
                 <footer> 
                     <p class='foot'>Site réalisé par Pronost Sacha et Siepka Aurélien</p>
@@ -70,10 +73,13 @@ class View{
 
     public function makeCarPage($car,$id){
         $this->title = "Page sur " . $car->getName();
-        $this->content = "<div>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
-        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " N m de torque, et elle a été faite en " . $car->getYear() . "</div>";
+        $this->content = "<p>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
+        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " N m de torque, et elle a été faite en " . $car->getYear() . "
+                    </p>
+                    ";
         if(file_exists("./upload/" . $id . "/")){
-            $this->content .= "<div class='images'>";
+            $this->content .= "<div class='images'>
+                        ";
             $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
             $nbImage = iterator_count($fi);
             $alreadyTaken = array();
@@ -81,24 +87,27 @@ class View{
                 $compt = 0;
                 while(true){
                     if(file_exists("./upload/" . $id . "/" . $compt . ".png") && !in_array($compt,$alreadyTaken)){
-                        $this->content .= "<img src='./upload/" . $id . "/" . $compt . ".png' alt='Image voiture'>";
+                        $this->content .= "<img src='./upload/" . $id . "/" . $compt . ".png' alt='Image voiture'>
+                    ";
                         array_push($alreadyTaken,$compt);
                         break;
                     }
                     $compt++;
                 }
             }
-            $this->content .= "</div>";
+            $this->content .= "</div>
+                    ";
         }
         $this->content .= "<form method='POST' action='". $this->router->getCarAskDeletionURL($id) ."'>
-                            <button type='submit'>Supprimer cette voiture </button>
-                            </form>";
+                         <button type='submit'>Supprimer cette voiture </button>
+                    </form>
+                    ";
         $this->content .= "<form method='POST' action='". $this->router->getCarOptionModificationURL($id) ."'>
-                            <button type='submit'>Modifier cette voiture </button>
-                            </form>";
+                         <button type='submit'>Modifier cette voiture </button>
+                    </form>";
         $this->content .= "<form method='POST' action='". $this->router->getCarOptionImageModificationURL($id) ."'>
-                            <button type='submit'>Modifier image de la voiture</button>
-                            </form>";
+                         <button type='submit'>Modifier image de la voiture</button>
+                    </form>";
         $this->render();
     }
 
@@ -118,25 +127,33 @@ class View{
     public function makeListPage($tableauVoitures,$taille){
         $taille = ceil($taille);
         $this->title = "Liste de toutes les voitures";
-        $this->content = "<ul id='liste'>";
+        $this->content = "<ul id='liste'>
+                         ";
         foreach ($tableauVoitures as $id => $voiture){
-          $this->content = $this->content . "<li><a href='" . $this->router->getCarURL($id) . "'>" . $voiture->getName() . "</a></li>";
+          $this->content = $this->content . "<li><a href='" . $this->router->getCarURL($id) . "'>" . $voiture->getName() . "</a></li>
+                         ";
         }
-        $this->content = $this->content . "</ul>";
+        $this->content = $this->content . "</ul>
+                    ";
         if($_GET["liste"] == 0){
             $previous = 0;
         }
         else{
             $previous = $_GET["liste"] - 1;
         }
-        $this->content .= "<hr><nav aria-label='pagination'> <ul class='pagination'>
-        <li><a href='" . $this->router->getList($previous) ."'><span aria-hidden='true'>«</span></a></li>";
+        $this->content .= "<hr>
+                    <nav aria-label='pagination'> 
+                         <ul class='pagination'>
+                             <li><a href='" . $this->router->getList($previous) ."'><span aria-hidden='true'>«</span></a></li>
+                             ";
         for($i = 0; $i < $taille; $i++){
             if($i == $_GET["liste"]){
-                $this->content .= "<li><a href='' aria-current='page'>" . $i . "</a></li>";
+                $this->content .= "<li><a href='' aria-current='page'>" . $i . "</a></li>
+                             ";
             }
             else {
-                $this->content .= "<li><a href='" . $this->router->getList($i) . "'>" . $i . "</a></li>";
+                $this->content .= "<li><a href='" . $this->router->getList($i) . "'>" . $i . "</a></li>
+                             ";
             }
         }
         if($_GET["liste"] >= $taille-2){
@@ -145,7 +162,9 @@ class View{
         else{
             $next = $_GET["liste"] + 1;
         }
-        $this->content .= "<li><a href='" . $this->router->getList($next) . "'><span aria-hidden='true'>»</span></a></li></ul></nav>";
+        $this->content .= "<li><a href='" . $this->router->getList($next) . "'><span aria-hidden='true'>»</span></a></li>
+                         </ul>
+                    </nav>";
         $this->render();
     }
 
@@ -366,21 +385,19 @@ class View{
     public function makeAproposPage(){
         $this->title = "À propos";
         $this->content = "<p> PRONOST Sacha, Numéro étudiant :<strong> 21901956 </strong> Groupe : <strong>4B</strong> </p>
-        <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p>
-        ";
-        $this->content .= "<h3>Liste des <strong>compléments</strong> réalisées</h3>
-        <ul class='propos'>
-            <li> Un objet peut être illustré par zéro, une ou plusieurs images (modifiables) uploadées par le créateur de l'objet. </li>
-            <li>Gestion par un admin des comptes utilisateurs</li>
-            <li>Pagination de la liste</li>
-        </ul>
-        <h3>Répartition des <strong>tâches</strong> dans le groupe:</h3>
-        <ul class='propos'>
-            <li><strong>Réalisation de base</strong>: Faite par nous deux au fur et à mesure des TP</li>
-            <li><strong>Images</strong> : Sacha</li>
-            <li><strong>Pagination</strong> : Aurélien</li>
-            <li><strong>Gestion par un admin</strong> : Sacha/Aurélien</li>
-        </ul>
+                    <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p><h3>Liste des <strong>compléments</strong> réalisées</h3>
+                    <ul class='propos'>
+                        <li> Un objet peut être illustré par zéro, une ou plusieurs images (modifiables) uploadées par le créateur de l'objet. </li>
+                        <li>Gestion par un admin des comptes utilisateurs</li>
+                        <li>Pagination de la liste</li>
+                    </ul>
+                    <h3>Répartition des <strong>tâches</strong> dans le groupe:</h3>
+                    <ul class='propos'>
+                        <li><strong>Réalisation de base</strong>: Faite par nous deux au fur et à mesure des TP</li>
+                        <li><strong>Images</strong> : Sacha</li>
+                        <li><strong>Pagination</strong> : Aurélien</li>
+                        <li><strong>Gestion par un admin</strong> : Sacha/Aurélien</li>
+                    </ul>
         ";
         $this->render();
     }
@@ -446,12 +463,17 @@ class View{
     }
     public function makeListModificationAccountPage($accountStorage){
         $this->title = "Modification de compte";
-        $this->content = "<p>Liste des <strong>comptes</strong> :</p>";
-        $this->content .= "<ul id='liste'>";
+        $this->content = "<p>Liste des <strong>comptes</strong> :</p>
+                    ";
+        $this->content .= "<ul id='liste'>
+                        ";
         foreach($accountStorage->getTableauCompte() as $compte){
-            $this->content .= "<li>";
-            $this->content .= "<a href=" . $this->router->getModificationAccount($compte->getLogin()) . ">" . $compte->getLogin() . "</a>";
-            $this->content .= "</li>";
+            $this->content .= "<li>
+                           ";
+            $this->content .= "<a href=" . $this->router->getModificationAccount($compte->getLogin()) . ">" . $compte->getLogin() . "</a>
+                        ";
+            $this->content .= "</li>
+                        ";
         }
         $this->content .= "</ul>";
         $this->render();
@@ -459,15 +481,16 @@ class View{
     public function makeModificationAccountPage($login,$compte){
         $this->title = "Modification de compte";
         $this->content = "<form method='POST' action=" . $this->router->getApplyModificationAccount($login) ."> 
-        <div>
-            <label for='status'>Changement Status, Status actuelle : <strong> " . $compte->getStatus() . "</strong>  </label>
-            <input type='text' id='status' value=" . $compte->getStatus() . " name='status'>
-            <button type='submit'>Changer le status</button>
-        </div>
-        </form>";
+                          <div>
+                              <label for='status'>Changement Status, Status actuelle : <strong> " . $compte->getStatus() . "</strong>  </label>
+                              <input type='text' id='status' value=" . $compte->getStatus() . " name='status'>
+                              <button type='submit'>Changer le status</button>
+                          </div>
+                    </form>
+                    ";
         $this->content .= "<form method='POST' action=". $this->router->getAccountAskDeletionURL($login) .">
-                            <button type='submit'>Supprimer ce compte </button>
-                            </form>";
+                          <button type='submit'>Supprimer ce compte </button>
+                    </form>";
         $this->render();
     }
     public function makeAskDeletionAccountPage($login){
