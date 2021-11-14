@@ -63,7 +63,7 @@ class View{
                     " . $this->content . "
                 </div>
                 <hr>
-                <footer> 
+                <footer>
                     <p class='foot'>Site réalisé par Pronost Sacha et Siepka Aurélien</p>
                 </footer>
             </body>
@@ -74,7 +74,7 @@ class View{
     public function makeCarPage($car,$id){
         $this->title = "Page sur " . $car->getName();
         $this->content = "<p>" . $car->getName() . " est une voiture de la marque " . $car->getBrand() . "
-        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " N m de torque, et elle a été faite en " . $car->getYear() . "
+        elle possède " . $car->getHorsePower() . " chevaux, " . $car->getTorque() . " N m de torque, et elle a été construite en " . $car->getYear() . "
                     </p>
                     ";
         if(file_exists("./upload/" . $id . "/")){
@@ -119,8 +119,8 @@ class View{
 
     public function makeWelcomPage(){
         $this->title = "Bienvenue sur le site";
-        $this->content = "Dans ce site, vous pouvez accéder à une liste de voitures poster par les utilisateurs,
-        il vous est aussi possible de créer un compte et de vous connecter afin de vous-même poster votre propre voiture!";
+        $this->content = "Dans ce site, vous pouvez accéder à une liste de voitures postées par les utilisateurs,
+        il vous est aussi possible de créer un compte et de vous connecter afin de poster vous-même votre voiture!";
         $this->render();
     }
 
@@ -142,7 +142,7 @@ class View{
             $previous = $_GET["liste"] - 1;
         }
         $this->content .= "<hr>
-                    <nav aria-label='pagination'> 
+                    <nav aria-label='pagination'>
                          <ul class='pagination'>
                              <li><a href='" . $this->router->getList($previous) ."'><span aria-hidden='true'>«</span></a></li>
                              ";
@@ -247,7 +247,7 @@ class View{
       }
     }
     public function makeCarImageAdd($id){
-        $this->title = "Ajout d'une ou plusieurs image";
+        $this->title = "Ajout d'une ou plusieurs images";
         $this->content = "<form enctype='multipart/form-data' action=" . $this->router->getUploadUrl($id) . " method='POST'>
         <input type='file' name='pj[]' multiple>
         <button type='submit'>Valider</button>
@@ -336,8 +336,8 @@ class View{
         }
     }
     public function makeCarImageModification($id){
-        $this->title = "Modifications des images de la voiture";
-        $this->content = "<p>Souhaité vous ajouter, ou supprimer des images (si il en existe)?</p>";
+        $this->title = "Modification des images de la voiture";
+        $this->content = "<p>Souhaitez vous ajouter, ou supprimer des images (si il en existe)?</p>";
         if(file_exists("./upload/" . $id ."/")){
             $fi = new FilesystemIterator("./upload/" . $id . "/", FilesystemIterator::SKIP_DOTS); // C'est deux ligne de code on été trouvé sur internet, elle permettent de compter le nombre d'image que possède le dossier.
             $nbImage = iterator_count($fi);
@@ -385,7 +385,7 @@ class View{
     public function makeAproposPage(){
         $this->title = "À propos";
         $this->content = "<p> PRONOST Sacha, Numéro étudiant :<strong> 21901956 </strong> Groupe : <strong>4B</strong> </p>
-                    <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p><h3>Liste des <strong>compléments</strong> réalisées</h3>
+                    <p> SIEPKA Aurélien, Numéro étudiant : <strong>21906664</strong> Groupe : <strong>4A</strong></p><h3>Liste des <strong>compléments</strong> réalisés</h3>
                     <ul class='propos'>
                         <li> Un objet peut être illustré par zéro, une ou plusieurs images (modifiables) uploadées par le créateur de l'objet. </li>
                         <li>Gestion par un admin des comptes utilisateurs</li>
@@ -421,8 +421,8 @@ class View{
         $this->render();
     }
     public function makeUnauthorizedPage(){
-        $this->title = "Accées non autorisé";
-        $this->content = "<p>Vous ne pouvez pas accéder à cette page avec votre status actuel</p>";
+        $this->title = "Accès non autorisé";
+        $this->content = "<p>Vous ne pouvez pas accéder à cette page avec votre statut actuel</p>";
         $this->render();
     }
     public function makeCreationAccountPage($error){
@@ -480,11 +480,11 @@ class View{
     }
     public function makeModificationAccountPage($login,$compte){
         $this->title = "Modification de compte";
-        $this->content = "<form method='POST' action=" . $this->router->getApplyModificationAccount($login) ."> 
+        $this->content = "<form method='POST' action=" . $this->router->getApplyModificationAccount($login) .">
                           <div>
-                              <label for='status'>Changement Status, Status actuelle : <strong> " . $compte->getStatus() . "</strong>  </label>
+                              <label for='status'>Changement Statut, Statut actuel : <strong> " . $compte->getStatus() . "</strong>  </label>
                               <input type='text' id='status' value=" . $compte->getStatus() . " name='status'>
-                              <button type='submit'>Changer le status</button>
+                              <button type='submit'>Changer le statut</button>
                           </div>
                     </form>
                     ";
